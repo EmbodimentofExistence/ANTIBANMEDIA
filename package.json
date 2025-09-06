@@ -1,13 +1,27 @@
 {
-  "name": "anonymous-rooms",
+  "name": "anonymous-chat",
   "version": "1.0.0",
-  "description": "Free anonymous chat + video call rooms",
+  "description": "Free anonymous text and video chat rooms",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
+  "keywords": [
+    "chat",
+    "anonymous",
+    "webrtc",
+    "websocket",
+    "rooms"
+  ],
+  "author": "YourName",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.19.2",
-    "ws": "^8.17.0"
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }
+
