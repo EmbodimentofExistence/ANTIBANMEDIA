@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Anonymous Rooms</title>
@@ -7,40 +7,43 @@
 </head>
 <body>
   <div id="setup">
-    <h2>Enter Name & Room</h2>
+    <h2>Anonymous Rooms</h2>
     <input id="name" placeholder="Your name">
     <input id="room" placeholder="Room name">
-    <button id="joinBtn">Join</button>
+    <div>
+      <button id="createBtn">Create Room</button>
+      <button id="joinBtn">Join Room</button>
+    </div>
+    <div id="error" class="error"></div>
   </div>
 
   <div id="app" style="display:none;">
-    <div class="topbar">
-      <span>My ID: <span id="myId"></span></span>
-      <span>Room: <span id="roomLabel"></span></span>
-      <button id="leaveBtn">Leave Room</button>
-    </div>
+    <header>
+      <span>Room: <b id="roomLabel"></b></span>
+      <span>My ID: <b id="myId"></b></span>
+      <button id="leaveBtn">Leave</button>
+    </header>
 
-    <div class="peers">
-      <h3>Peers</h3>
-      <ul id="peersList"></ul>
-      <input id="addName" placeholder="Peer name">
-      <button id="addBtn">Add</button>
-    </div>
+    <main>
+      <section id="chatSection">
+        <div id="messages"></div>
+        <div id="chatInput">
+          <input id="msgBox" placeholder="Type a message...">
+          <button id="sendBtn">Send</button>
+        </div>
+      </section>
 
-    <div class="chat">
-      <h3>Chat</h3>
-      <div id="chat" class="chatbox"></div>
-      <input id="msg" placeholder="Message">
-      <button id="sendMsgBtn">Send</button>
-    </div>
+      <section id="peersSection">
+        <h3>Peers</h3>
+        <ul id="peerList"></ul>
+      </section>
 
-    <div class="media">
-      <h3>Call</h3>
-      <button id="startCallBtn">Start Call</button>
-      <button id="hangupBtn" disabled>Hang Up</button>
-      <div id="localAudioContainer"></div>
-      <div id="remoteAudioContainer"></div>
-    </div>
+      <section id="videoSection">
+        <h3>Video Call</h3>
+        <video id="localVideo" autoplay muted playsinline></video>
+        <div id="remoteVideos"></div>
+      </section>
+    </main>
   </div>
 
   <script src="app.js"></script>
