@@ -1,59 +1,139 @@
 body {
-  font-family: sans-serif;
-  background: #111;
-  color: #eee;
+  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 1rem;
+  background: #f4f4f9;
+  color: #222;
 }
 
-h2, h3 {
-  margin: 0.5rem 0;
+#setup {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
 }
 
-input, button {
-  margin: 0.25rem;
-  padding: 0.5rem;
-  border-radius: 8px;
+#setup input {
+  display: block;
+  width: 90%;
+  margin: 10px auto;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+#setup button {
+  margin: 5px;
+  padding: 8px 14px;
   border: none;
+  border-radius: 6px;
+  background: #0078ff;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-button {
-  background: #444;
+#setup button:hover {
+  background: #005fcc;
+}
+
+.error {
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: red;
+}
+
+#app header {
+  background: #0078ff;
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#app header button {
+  background: #ff4444;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
   color: white;
   cursor: pointer;
 }
 
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.topbar {
+#app main {
   display: flex;
-  justify-content: space-between;
-  background: #222;
-  padding: 0.5rem;
-  border-radius: 8px;
+  padding: 20px;
+  gap: 20px;
 }
 
-.peers, .chat, .media {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  background: #222;
-  border-radius: 8px;
+#chatSection {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-.chatbox {
-  height: 150px;
+#messages {
+  flex: 1;
   overflow-y: auto;
-  border: 1px solid #444;
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-  background: #111;
+  margin-bottom: 10px;
+  padding: 5px;
 }
 
-video, audio {
-  display: block;
-  margin: 0.5rem;
+#chatInput {
+  display: flex;
+}
+
+#chatInput input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px 0 0 6px;
+  border: 1px solid #ccc;
+}
+
+#chatInput button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 0 6px 6px 0;
+  background: #0078ff;
+  color: white;
+  cursor: pointer;
+}
+
+#peersSection, #videoSection {
+  flex: 1;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#peerList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#peerList li {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+#videoSection video {
+  width: 100%;
+  border-radius: 10px;
   background: black;
+  margin-bottom: 10px;
+}
+
+#remoteVideos video {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
 }
