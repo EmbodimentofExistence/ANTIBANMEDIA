@@ -9,44 +9,53 @@ const wss = new WebSocket.Server({ server });
 
 app.use(express.static(path.join(__dirname, "public")));
 
-const rooms = {}; // roomName -> Set of sockets
+const rooms = {}; // { roomName: Set<ws> }
 
+// Helper: send JSON to a client
 function send(ws, obj) {
   try { ws.send(JSON.stringify(obj)); } catch {}
 }
 
-wss.on("connection", ws => {
+// Broadcast to all clients in a room except sender
+function broadcast(roomName, sender, obj) {
+  if (!rooms[roomName]) return;
+  rooms[roomName].forEach(client => {
+    if (client !== sender && client.readyState === WebSocket.OPEN) {
+      send(client, obj);
+    }
+  });
+}
+
+wss.on("connection", (ws) => {
   ws.id = Math.random().toString(36).slice(2, 9);
   ws.name = "anon";
   ws.roomId = null;
 
-  ws.on("message", msg => {
+  ws.on("message", (msg) => {
     let data;
     try { data = JSON.parse(msg); } catch { return; }
 
+    // CREATE ROOM
     if (data.type === "create-room") {
       const room = data.roomId;
       ws.name = (data.payload && data.payload.name) || "anon";
 
       if (rooms[room] && rooms[room].size > 0) {
-        // Room already exists
-        send(ws, { type: "room-error", message: "Room already exists" });
-        return;
+        return send(ws, { type: "room-error", message: "Room already exists" });
       }
 
-      // Create new room
       rooms[room] = new Set([ws]);
       ws.roomId = room;
       send(ws, { type: "joined", id: ws.id, peers: [] });
     }
 
-    if (data.type === "join-room") {
+    // JOIN ROOM
+    else if (data.type === "join-room") {
       const room = data.roomId;
       ws.name = (data.payload && data.payload.name) || "anon";
 
       if (!rooms[room] || rooms[room].size === 0) {
-        send(ws, { type: "room-error", message: "Room does not exist" });
-        return;
+        return send(ws, { type: "room-error", message: "Room does not exist" });
       }
 
       ws.roomId = room;
@@ -54,39 +63,35 @@ wss.on("connection", ws => {
 
       const peers = [...rooms[room]].filter(c => c !== ws).map(c => ({ id: c.id, name: c.name }));
       send(ws, { type: "joined", id: ws.id, peers });
-      rooms[room].forEach(c => {
-        if (c !== ws) send(c, { type: "new-peer", id: ws.id, name: ws.name });
-      });
+
+      broadcast(room, ws, { type: "new-peer", id: ws.id, name: ws.name });
     }
 
-    if (data.type === "leave") {
-      leaveRoom(ws);
-      ws.close();
+    // SIGNALING (WebRTC)
+    else if (data.type === "signal" && ws.roomId) {
+      const targetId = data.to;
+      const target = [...rooms[ws.roomId]].find(c => c.id === targetId);
+      if (target) send(target, { type: "signal", from: ws.id, signal: data.signal });
     }
 
-    if (data.type === "signal") {
-      const { to, data: payload } = data.payload;
-      for (const client of rooms[ws.roomId] || []) {
-        if (client.id === to) {
-          send(client, { type: "signal", from: ws.id, name: ws.name, data: payload });
-        }
-      }
+    // CHAT MESSAGE
+    else if (data.type === "message" && ws.roomId) {
+      broadcast(ws.roomId, ws, { type: "message", from: ws.name, text: data.text });
     }
   });
 
-  ws.on("close", () => leaveRoom(ws));
+  ws.on("close", () => {
+    if (ws.roomId && rooms[ws.roomId]) {
+      rooms[ws.roomId].delete(ws);
+      broadcast(ws.roomId, ws, { type: "peer-left", id: ws.id });
+
+      // delete room if empty
+      if (rooms[ws.roomId].size === 0) delete rooms[ws.roomId];
+    }
+  });
 });
 
-function leaveRoom(ws) {
-  if (!ws.roomId) return;
-  const room = rooms[ws.roomId];
-  if (!room) return;
-
-  room.delete(ws);
-  room.forEach(c => send(c, { type: "peer-left", id: ws.id }));
-  if (room.size === 0) delete rooms[ws.roomId];
-}
-
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log("Server running on", PORT));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 
